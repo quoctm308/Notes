@@ -22,8 +22,9 @@ import java.util.List;
 public class NotesAdapter extends RecyclerView.Adapter<NotesAdapter.NoteViewHolder> {
 
     private List<Note> notes;
-private NotesListener notesListener;
-    public NotesAdapter(List<Note> notes,NotesListener notesListener) {
+    private NotesListener notesListener;
+
+    public NotesAdapter(List<Note> notes, NotesListener notesListener) {
         this.notes = notes;
         this.notesListener = notesListener;
     }
@@ -40,12 +41,12 @@ private NotesListener notesListener;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NoteViewHolder holder,final int position) {
+    public void onBindViewHolder(@NonNull NoteViewHolder holder, final int position) {
         holder.setNote(notes.get(position));
         holder.layoutNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                notesListener.onNoteClicked(notes.get(position),position);
+                notesListener.onNoteClicked(notes.get(position), position);
             }
         });
     }
@@ -64,14 +65,15 @@ private NotesListener notesListener;
 
         TextView textTitle, textSubtitle, textDateTime;
         LinearLayout layoutNote;
-RoundedImageView imageNote;
+        RoundedImageView imageNote;
+
         NoteViewHolder(@NonNull View itemView) {
             super(itemView);
             textTitle = itemView.findViewById(R.id.textTitle);
             textSubtitle = itemView.findViewById(R.id.textSubtitle);
             textDateTime = itemView.findViewById(R.id.textDateTime);
-layoutNote = itemView.findViewById(R.id.layoutNote);
-imageNote = itemView.findViewById(R.id.imageNote);
+            layoutNote = itemView.findViewById(R.id.layoutNote);
+            imageNote = itemView.findViewById(R.id.imageNote);
         }
 
         void setNote(Note note) {
@@ -83,18 +85,18 @@ imageNote = itemView.findViewById(R.id.imageNote);
                 textSubtitle.setText(note.getSubtitle());
             }
             textDateTime.setText(note.getDateTime());
-            GradientDrawable gradientDrawable =(GradientDrawable) layoutNote.getBackground();
-            if(note.getColor()!=null){
+            GradientDrawable gradientDrawable = (GradientDrawable) layoutNote.getBackground();
+            if (note.getColor() != null) {
                 gradientDrawable.setColor(Color.parseColor(note.getColor()));
-            }else{
+            } else {
                 gradientDrawable.setColor(Color.parseColor("#333333"));
             }
-            if(note.getImagePath()!=null) {
-            imageNote.setImageBitmap(BitmapFactory.decodeFile(note.getImagePath()));
-           imageNote.setVisibility(View.VISIBLE);
+            if (note.getImagePath() != null) {
+                imageNote.setImageBitmap(BitmapFactory.decodeFile(note.getImagePath()));
+                imageNote.setVisibility(View.VISIBLE);
             } else {
-            imageNote.setVisibility(View.GONE);
-            }
+                imageNote.setVisibility(View.GONE);
             }
         }
+    }
 }
