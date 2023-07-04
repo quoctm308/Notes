@@ -56,8 +56,8 @@ public class CreateNoteActivity extends AppCompatActivity {
     private LinearLayout layoutWebURL;
     private AlertDialog dialogAddURL;
     private Note alreadyAvailableNote;
-private static final int REQUEST_CODE_STORAGE_PERMISSION =1;
-private static final int REQUEST_CODE_SELECT_IMAGE=2;
+    private static final int REQUEST_CODE_STORAGE_PERMISSION = 1;
+    private static final int REQUEST_CODE_SELECT_IMAGE = 2;
     private ActivityResultLauncher<Intent> imagePickerLauncher;
 
     @Override
@@ -95,9 +95,9 @@ private static final int REQUEST_CODE_SELECT_IMAGE=2;
         inputNoteText = findViewById(R.id.inputNote);
         textDateTime = findViewById(R.id.textDateTime);
         viewSubtitleIndicator = findViewById(R.id.viewSubtitleIndicator);
-        imageNote=findViewById(R.id.imageNote);
-textWebURL = findViewById(R.id.textWebURL);
-layoutWebURL=findViewById(R.id.layoutWebURL);
+        imageNote = findViewById(R.id.imageNote);
+        textWebURL = findViewById(R.id.textWebURL);
+        layoutWebURL = findViewById(R.id.layoutWebURL);
         textDateTime.setText(
                 new SimpleDateFormat("EEEE, dd MMMM yyyy HH:mm a", Locale.getDefault())
                         .format(new Date())
@@ -110,30 +110,52 @@ layoutWebURL=findViewById(R.id.layoutWebURL);
                 saveNote();
             }
         });
-        selectedNoteColor="#333333";
-        selectedImagePath="";
-        if(getIntent().getBooleanExtra("isViewOrUpdate",false)){
+        selectedNoteColor = "#333333";
+        selectedImagePath = "";
+        if (getIntent().getBooleanExtra("isViewOrUpdate", false)) {
             alreadyAvailableNote = (Note) getIntent().getSerializableExtra("note");
-        setViewOrUpdateNote();
+            setViewOrUpdateNote();
         }
+
+        findViewById(R.id.imageRemoveWebURL).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                textWebURL.setText(null);
+                layoutWebURL.setVisibility(View.GONE);
+            }
+        });
+        findViewById(R.id.imageRemoveImage).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imageNote.setImageBitmap(null);
+                imageNote.setVisibility(View.GONE);
+                findViewById(R.id.imageRemoveImage).setVisibility(View.GONE);
+                selectedImagePath = "";
+            }
+        });
+
         initMiscellaneous();
         setSubtitleIndicatorColor();
     }
-private void setViewOrUpdateNote(){
-inputNoteTitle.setText(alreadyAvailableNote.getTitle());
-inputNoteSubtitile.setText(alreadyAvailableNote.getSubtitle());
-inputNoteText.setText(alreadyAvailableNote.getNoteText());
-textDateTime.setText(alreadyAvailableNote.getDateTime());
-if(alreadyAvailableNote.getImagePath()!=null && !alreadyAvailableNote.getImagePath().trim().isEmpty()){
-    imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableNote.getImagePath()));
-    imageNote.setVisibility(View.VISIBLE);
-    selectedImagePath = alreadyAvailableNote.getImagePath();
-}
-if(alreadyAvailableNote.getWebLink()!=null&& !alreadyAvailableNote.getWebLink().trim().isEmpty()){
-    textWebURL.setText(alreadyAvailableNote.getWebLink());
-    layoutWebURL.setVisibility(View.VISIBLE);
-}
-}
+
+    private void setViewOrUpdateNote() {
+        inputNoteTitle.setText(alreadyAvailableNote.getTitle());
+        inputNoteSubtitile.setText(alreadyAvailableNote.getSubtitle());
+        inputNoteText.setText(alreadyAvailableNote.getNoteText());
+        textDateTime.setText(alreadyAvailableNote.getDateTime());
+        if (alreadyAvailableNote.getImagePath() != null && !alreadyAvailableNote.getImagePath().trim().isEmpty()) {
+            imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableNote.getImagePath()));
+            imageNote.setVisibility(View.VISIBLE);
+            findViewById(R.id.imageRemoveImage).setVisibility(View.VISIBLE);
+            selectedImagePath = alreadyAvailableNote.getImagePath();
+        }
+
+        if (alreadyAvailableNote.getWebLink() != null && !alreadyAvailableNote.getWebLink().trim().isEmpty()) {
+            textWebURL.setText(alreadyAvailableNote.getWebLink());
+            layoutWebURL.setVisibility(View.VISIBLE);
+        }
+    }
+
     private void saveNote() {
 
         if (inputNoteTitle.getText().toString().trim().isEmpty()) {
@@ -150,14 +172,14 @@ if(alreadyAvailableNote.getWebLink()!=null&& !alreadyAvailableNote.getWebLink().
         note.setSubtitle(inputNoteSubtitile.getText().toString());
         note.setNoteText(inputNoteText.getText().toString());
         note.setDateTime(textDateTime.getText().toString());
-note.setColor(selectedNoteColor);
-note.setImagePath(selectedImagePath);
-if(layoutWebURL.getVisibility()==View.VISIBLE){
-    note.setWebLink(textWebURL.getText().toString());
-}
-if(alreadyAvailableNote!=null){
-  note.setId(alreadyAvailableNote.getId());
-}
+        note.setColor(selectedNoteColor);
+        note.setImagePath(selectedImagePath);
+        if (layoutWebURL.getVisibility() == View.VISIBLE) {
+            note.setWebLink(textWebURL.getText().toString());
+        }
+        if (alreadyAvailableNote != null) {
+            note.setId(alreadyAvailableNote.getId());
+        }
         @SuppressLint("StaticFieldLeak")
         class SaveNoteTask extends AsyncTask<Void, Void, Void> {
 
@@ -177,40 +199,41 @@ if(alreadyAvailableNote!=null){
         }
         new SaveNoteTask().execute();
     }
-    private void initMiscellaneous(){
+
+    private void initMiscellaneous() {
         final LinearLayout layoutMiscellaneous = findViewById(R.id.layoutMiscellaneous);
-    final BottomSheetBehavior bottomSheetBehavior =BottomSheetBehavior.from(layoutMiscellaneous);
-    layoutMiscellaneous.findViewById(R.id.textMiscellaneous).setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if(bottomSheetBehavior.getState()!=BottomSheetBehavior.STATE_EXPANDED){
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-            } else{
-                bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        final BottomSheetBehavior bottomSheetBehavior = BottomSheetBehavior.from(layoutMiscellaneous);
+        layoutMiscellaneous.findViewById(R.id.textMiscellaneous).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (bottomSheetBehavior.getState() != BottomSheetBehavior.STATE_EXPANDED) {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                } else {
+                    bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                }
             }
-        }
-    });
-    final ImageView imageColor1 = layoutMiscellaneous.findViewById(R.id.imageColor1);
+        });
+        final ImageView imageColor1 = layoutMiscellaneous.findViewById(R.id.imageColor1);
         final ImageView imageColor2 = layoutMiscellaneous.findViewById(R.id.imageColor2);
         final ImageView imageColor3 = layoutMiscellaneous.findViewById(R.id.imageColor3);
         final ImageView imageColor4 = layoutMiscellaneous.findViewById(R.id.imageColor4);
         final ImageView imageColor5 = layoutMiscellaneous.findViewById(R.id.imageColor5);
-    layoutMiscellaneous.findViewById(R.id.viewColor1).setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            selectedNoteColor ="#333333";
-            imageColor1.setImageResource(R.drawable.ic_done);
-            imageColor2.setImageResource(0);
-            imageColor3.setImageResource(0);
-            imageColor4.setImageResource(0);
-            imageColor5.setImageResource(0);
-            setSubtitleIndicatorColor();
-        }
-    });
+        layoutMiscellaneous.findViewById(R.id.viewColor1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectedNoteColor = "#333333";
+                imageColor1.setImageResource(R.drawable.ic_done);
+                imageColor2.setImageResource(0);
+                imageColor3.setImageResource(0);
+                imageColor4.setImageResource(0);
+                imageColor5.setImageResource(0);
+                setSubtitleIndicatorColor();
+            }
+        });
         layoutMiscellaneous.findViewById(R.id.viewColor2).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectedNoteColor ="#FDBE3B";
+                selectedNoteColor = "#FDBE3B";
                 imageColor1.setImageResource(0);
                 imageColor2.setImageResource(R.drawable.ic_done);
                 imageColor3.setImageResource(0);
@@ -222,7 +245,7 @@ if(alreadyAvailableNote!=null){
         layoutMiscellaneous.findViewById(R.id.viewColor3).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectedNoteColor ="#FF4842";
+                selectedNoteColor = "#FF4842";
                 imageColor1.setImageResource(0);
                 imageColor2.setImageResource(0);
                 imageColor3.setImageResource(R.drawable.ic_done);
@@ -234,7 +257,7 @@ if(alreadyAvailableNote!=null){
         layoutMiscellaneous.findViewById(R.id.viewColor4).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectedNoteColor ="#3A52Fc";
+                selectedNoteColor = "#3A52Fc";
                 imageColor1.setImageResource(0);
                 imageColor2.setImageResource(0);
                 imageColor3.setImageResource(0);
@@ -246,7 +269,7 @@ if(alreadyAvailableNote!=null){
         layoutMiscellaneous.findViewById(R.id.viewColor5).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectedNoteColor ="#000000";
+                selectedNoteColor = "#000000";
                 imageColor1.setImageResource(0);
                 imageColor2.setImageResource(0);
                 imageColor3.setImageResource(0);
@@ -255,18 +278,18 @@ if(alreadyAvailableNote!=null){
                 setSubtitleIndicatorColor();
             }
         });
-        if(alreadyAvailableNote!=null && alreadyAvailableNote.getColor()!=null&&!alreadyAvailableNote.getColor().trim().isEmpty()){
-            switch (alreadyAvailableNote.getColor()){
-                case"#FDBE3B":
+        if (alreadyAvailableNote != null && alreadyAvailableNote.getColor() != null && !alreadyAvailableNote.getColor().trim().isEmpty()) {
+            switch (alreadyAvailableNote.getColor()) {
+                case "#FDBE3B":
                     layoutMiscellaneous.findViewById(R.id.viewColor2).performClick();
-              break;
-                case "#FF4842" :
+                    break;
+                case "#FF4842":
                     layoutMiscellaneous.findViewById(R.id.viewColor3).performClick();
                     break;
-                case"#3A52Fc":
+                case "#3A52Fc":
                     layoutMiscellaneous.findViewById(R.id.viewColor4).performClick();
                     break;
-                case"#000000":
+                case "#000000":
                     layoutMiscellaneous.findViewById(R.id.viewColor5).performClick();
                     break;
             }
@@ -274,18 +297,19 @@ if(alreadyAvailableNote!=null){
         layoutMiscellaneous.findViewById(R.id.layoutAddImage).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-bottomSheetBehavior.setState((BottomSheetBehavior.STATE_COLLAPSED));
-if(ContextCompat.checkSelfPermission(
-        getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE
-)!= PackageManager.PERMISSION_GRANTED){
-    ActivityCompat.requestPermissions(
-            CreateNoteActivity.this,
-            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-            REQUEST_CODE_STORAGE_PERMISSION
-    );
-            }else{
-              selectImage();
-            }}
+                bottomSheetBehavior.setState((BottomSheetBehavior.STATE_COLLAPSED));
+                if (ContextCompat.checkSelfPermission(
+                        getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(
+                            CreateNoteActivity.this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            REQUEST_CODE_STORAGE_PERMISSION
+                    );
+                } else {
+                    selectImage();
+                }
+            }
         });
         layoutMiscellaneous.findViewById(R.id.layoutAddUrl).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -295,10 +319,12 @@ if(ContextCompat.checkSelfPermission(
             }
         });
     }
-    private void setSubtitleIndicatorColor(){
-        GradientDrawable gradientDrawable =(GradientDrawable) viewSubtitleIndicator.getBackground();
+
+    private void setSubtitleIndicatorColor() {
+        GradientDrawable gradientDrawable = (GradientDrawable) viewSubtitleIndicator.getBackground();
         gradientDrawable.setColor(Color.parseColor(selectedNoteColor));
     }
+
     private void selectImage() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         imagePickerLauncher.launch(intent);
@@ -308,84 +334,87 @@ if(ContextCompat.checkSelfPermission(
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    if(requestCode ==REQUEST_CODE_STORAGE_PERMISSION && grantResults.length>0){
-       if(grantResults[0]==PackageManager.PERMISSION_GRANTED){
-           selectImage();
-       } else{
-           Toast.makeText(this,"Permission Denied", Toast.LENGTH_SHORT).show();       }
-    }
+        if (requestCode == REQUEST_CODE_STORAGE_PERMISSION && grantResults.length > 0) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                selectImage();
+            } else {
+                Toast.makeText(this, "Permission Denied", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-    if( resultCode ==RESULT_OK){
-        if(data!=null){
-            Uri selectedImageUri = data.getData();
-            if(selectedImageUri!=null){
-                try{
-                    InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    imageNote.setImageBitmap(bitmap);
-                    imageNote.setVisibility(View.VISIBLE);
-                    selectedImagePath = getPathFromUri(selectedImageUri);
-                } catch(Exception exception){
-                    Toast.makeText(this,exception.getMessage(),Toast.LENGTH_SHORT).show();
+        if (resultCode == RESULT_OK) {
+            if (data != null) {
+                Uri selectedImageUri = data.getData();
+                if (selectedImageUri != null) {
+                    try {
+                        InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
+                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                        imageNote.setImageBitmap(bitmap);
+                        imageNote.setVisibility(View.VISIBLE);
+                        findViewById(R.id.imageRemoveImage).setVisibility(View.VISIBLE);
+                        selectedImagePath = getPathFromUri(selectedImageUri);
+                    } catch (Exception exception) {
+                        Toast.makeText(this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         }
     }
-    }
 
-    private String getPathFromUri(Uri contentUri){
+    private String getPathFromUri(Uri contentUri) {
         String filePath;
         Cursor cursor = getContentResolver()
-        .query(contentUri,null,null,null,null);
-        if(cursor==null){
+                .query(contentUri, null, null, null, null);
+        if (cursor == null) {
             filePath = contentUri.getPath();
-        } else{
+        } else {
             cursor.moveToFirst();
             int index = cursor.getColumnIndex("_data");
             filePath = cursor.getString(index);
-        cursor.close();
+            cursor.close();
         }
         return filePath;
     }
-    private void showAddDialog(){
-        if(dialogAddURL == null){
+
+    private void showAddDialog() {
+        if (dialogAddURL == null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(CreateNoteActivity.this);
-       View view = LayoutInflater.from(this).inflate(
-               R.layout.layout_add_url,(ViewGroup) findViewById(R.id.layoutAddUrlContainer)
-       );
-       builder.setView(view);
-       dialogAddURL = builder.create();
-       if(dialogAddURL.getWindow()!=null){
-           dialogAddURL.getWindow().setBackgroundDrawable(new ColorDrawable(0));
-       }
-       final EditText inputURL = view.findViewById(R.id.inputURL);
-       inputURL.requestFocus();
-       view.findViewById(R.id.textAdd).setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               if(inputURL.getText().toString().trim().isEmpty()){
-                   Toast.makeText(CreateNoteActivity.this,"Enter URL",Toast.LENGTH_SHORT).show();
+            View view = LayoutInflater.from(this).inflate(
+                    R.layout.layout_add_url, (ViewGroup) findViewById(R.id.layoutAddUrlContainer)
+            );
+            builder.setView(view);
+            dialogAddURL = builder.create();
+            if (dialogAddURL.getWindow() != null) {
+                dialogAddURL.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+            }
+            final EditText inputURL = view.findViewById(R.id.inputURL);
+            inputURL.requestFocus();
+            view.findViewById(R.id.textAdd).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (inputURL.getText().toString().trim().isEmpty()) {
+                        Toast.makeText(CreateNoteActivity.this, "Enter URL", Toast.LENGTH_SHORT).show();
 
-               } else if(!Patterns.WEB_URL.matcher(inputURL.getText().toString()).matches()){
-                   Toast.makeText(CreateNoteActivity.this, "Enter valid URL", Toast.LENGTH_SHORT).show();
-               } else{
-                   textWebURL.setText(inputURL.getText().toString());
-                   layoutWebURL.setVisibility(View.VISIBLE);
-                   dialogAddURL.dismiss();
+                    } else if (!Patterns.WEB_URL.matcher(inputURL.getText().toString()).matches()) {
+                        Toast.makeText(CreateNoteActivity.this, "Enter valid URL", Toast.LENGTH_SHORT).show();
+                    } else {
+                        textWebURL.setText(inputURL.getText().toString());
+                        layoutWebURL.setVisibility(View.VISIBLE);
+                        dialogAddURL.dismiss();
 
-               }
-           }
-       });
-       view.findViewById(R.id.textCancel).setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-          dialogAddURL.dismiss();
-           }
-       });
+                    }
+                }
+            });
+            view.findViewById(R.id.textCancel).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogAddURL.dismiss();
+                }
+            });
         }
         dialogAddURL.show();
     }
