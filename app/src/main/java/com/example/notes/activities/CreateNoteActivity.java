@@ -59,7 +59,7 @@ public class CreateNoteActivity extends AppCompatActivity {
     private Note alreadyAvailableNote;
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 1;
     private static final int REQUEST_CODE_SELECT_IMAGE = 2;
-    private ActivityResultLauncher<Intent> imagePickerLauncher;
+    //    private ActivityResultLauncher<Intent> imagePickerLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,22 +73,22 @@ public class CreateNoteActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-        imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-                        Uri selectedImageUri = result.getData().getData();
-                        if (selectedImageUri != null) {
-                            try {
-                                InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
-                                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                                imageNote.setImageBitmap(bitmap);
-                                imageNote.setVisibility(View.VISIBLE);
-                            } catch (Exception exception) {
-                                Toast.makeText(this, exception.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
-                });
+//        imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+//                result -> {
+//                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+//                        Uri selectedImageUri = result.getData().getData();
+//                        if (selectedImageUri != null) {
+//                            try {
+//                                InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
+//                                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+//                                imageNote.setImageBitmap(bitmap);
+//                                imageNote.setVisibility(View.VISIBLE);
+//                            } catch (Exception exception) {
+//                                Toast.makeText(this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+//                            }
+//                        }
+//                    }
+//                });
 
 
         inputNoteTitle = findViewById(R.id.inputNoteTitle);
@@ -134,6 +134,21 @@ public class CreateNoteActivity extends AppCompatActivity {
                 selectedImagePath = "";
             }
         });
+
+        if(getIntent().getBooleanExtra("isFromQuickActions", false)) {
+            String type = getIntent().getStringExtra("quickActionType");
+            if(type != null) {
+                if(type.equals("image")) {
+                    selectedImagePath = getIntent().getStringExtra("imagePath");
+                    imageNote.setImageBitmap(BitmapFactory.decodeFile(selectedImagePath));
+                    imageNote.setVisibility(View.VISIBLE);
+                    findViewById(R.id.imageRemoveImage).setVisibility(View.VISIBLE);
+                }else if(type.equals("URL")) {
+                    textWebURL.setText(getIntent().getStringExtra("URL"));
+                    layoutWebURL.setVisibility(View.VISIBLE);
+                }
+            }
+        }
 
         initMiscellaneous();
         setSubtitleIndicatorColor();
@@ -316,7 +331,7 @@ public class CreateNoteActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                showAddDialog();
+                showAddURLDialog();
             }
         });
         if(alreadyAvailableNote != null) {
@@ -385,7 +400,10 @@ public class CreateNoteActivity extends AppCompatActivity {
 
     private void selectImage() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        imagePickerLauncher.launch(intent);
+//        imagePickerLauncher.launch(intent);
+        if(intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, REQUEST_CODE_SELECT_IMAGE);
+        }
     }
 
 
@@ -438,7 +456,7 @@ public class CreateNoteActivity extends AppCompatActivity {
         return filePath;
     }
 
-    private void showAddDialog() {
+    private void showAddURLDialog() {
         if (dialogAddURL == null) {
             AlertDialog.Builder builder = new AlertDialog.Builder(CreateNoteActivity.this);
             View view = LayoutInflater.from(this).inflate(
