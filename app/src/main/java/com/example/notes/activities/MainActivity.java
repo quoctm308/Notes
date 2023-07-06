@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements NotesListener {
             if (data != null) {
                 getNotes(REQUEST_CODE_UPDATE_NOTE, data.getBooleanExtra("isNoteDeleted", false));
             }
-        }else if(requestCode == REQUEST_CODE_SELECT_IMAGE && resultCode == RESULT_OK) {
+        }else if(  resultCode == RESULT_OK) {
             if(data != null) {
                 Uri selectImageUri = data.getData();
                 if(selectImageUri != null) {

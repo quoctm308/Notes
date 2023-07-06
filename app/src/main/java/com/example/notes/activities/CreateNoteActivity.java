@@ -59,7 +59,7 @@ public class CreateNoteActivity extends AppCompatActivity {
     private Note alreadyAvailableNote;
     private static final int REQUEST_CODE_STORAGE_PERMISSION = 1;
     private static final int REQUEST_CODE_SELECT_IMAGE = 2;
-    //    private ActivityResultLauncher<Intent> imagePickerLauncher;
+        private ActivityResultLauncher<Intent> imagePickerLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,22 +73,22 @@ public class CreateNoteActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-//        imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
-//                result -> {
-//                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
-//                        Uri selectedImageUri = result.getData().getData();
-//                        if (selectedImageUri != null) {
-//                            try {
-//                                InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
-//                                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-//                                imageNote.setImageBitmap(bitmap);
-//                                imageNote.setVisibility(View.VISIBLE);
-//                            } catch (Exception exception) {
-//                                Toast.makeText(this, exception.getMessage(), Toast.LENGTH_SHORT).show();
-//                            }
-//                        }
-//                    }
-//                });
+        imagePickerLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                        Uri selectedImageUri = result.getData().getData();
+                        if (selectedImageUri != null) {
+                            try {
+                                InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
+                                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                                imageNote.setImageBitmap(bitmap);
+                                imageNote.setVisibility(View.VISIBLE);
+                            } catch (Exception exception) {
+                                Toast.makeText(this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                });
 
 
         inputNoteTitle = findViewById(R.id.inputNoteTitle);
@@ -400,10 +400,10 @@ public class CreateNoteActivity extends AppCompatActivity {
 
     private void selectImage() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//        imagePickerLauncher.launch(intent);
-        if(intent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(intent, REQUEST_CODE_SELECT_IMAGE);
-        }
+        imagePickerLauncher.launch(intent);
+//        if(intent.resolveActivity(getPackageManager()) != null) {
+//            startActivityForResult(intent, REQUEST_CODE_SELECT_IMAGE);
+//        }
     }
 
 
